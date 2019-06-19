@@ -1,0 +1,173 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <title>Logic &#8212; Xlearn-Engine  文档</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="搜索" href="../../search.html" />
+    <link rel="next" title="Metadata" href="../Metadata/index.html" />
+    <link rel="prev" title="Application" href="../index.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="logic">
+<h1>Logic<a class="headerlink" href="#logic" title="永久链接至标题">¶</a></h1>
+<div class="section" id="deploy">
+<h2>Deploy<a class="headerlink" href="#deploy" title="永久链接至标题">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@xlearn_view</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/algorithm/add&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">algorithm_add</span><span class="p">():</span>
+    <span class="n">input_data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Data: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">input_data</span><span class="p">))</span>
+    <span class="n">param_priority</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">PriorityInfo</span><span class="o">.</span><span class="n">NECESSARY</span><span class="p">,</span>
+        <span class="s1">&#39;display_name&#39;</span><span class="p">:</span> <span class="n">PriorityInfo</span><span class="o">.</span><span class="n">OPTIONAL</span><span class="p">,</span>
+        <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="n">PriorityInfo</span><span class="o">.</span><span class="n">OPTIONAL</span><span class="p">,</span>
+        <span class="s1">&#39;entry_name&#39;</span><span class="p">:</span> <span class="n">PriorityInfo</span><span class="o">.</span><span class="n">NECESSARY</span><span class="p">,</span>
+        <span class="s1">&#39;algorithm_type&#39;</span><span class="p">:</span> <span class="n">PriorityInfo</span><span class="o">.</span><span class="n">OPTIONAL</span><span class="p">,</span>
+        <span class="s1">&#39;hyperparameter_config&#39;</span><span class="p">:</span> <span class="n">PriorityInfo</span><span class="o">.</span><span class="n">OPTIONAL</span><span class="p">,</span>
+        <span class="s1">&#39;available&#39;</span><span class="p">:</span> <span class="n">PriorityInfo</span><span class="o">.</span><span class="n">OPTIONAL</span><span class="p">,</span>
+        <span class="s1">&#39;train_input_pattern&#39;</span><span class="p">:</span> <span class="n">PriorityInfo</span><span class="o">.</span><span class="n">OPTIONAL</span><span class="p">,</span>
+        <span class="s1">&#39;train_output_pattern&#39;</span><span class="p">:</span> <span class="n">PriorityInfo</span><span class="o">.</span><span class="n">OPTIONAL</span><span class="p">,</span>
+        <span class="s1">&#39;model_input_pattern&#39;</span><span class="p">:</span> <span class="n">PriorityInfo</span><span class="o">.</span><span class="n">OPTIONAL</span><span class="p">,</span>
+        <span class="s1">&#39;model_output_pattern&#39;</span><span class="p">:</span> <span class="n">PriorityInfo</span><span class="o">.</span><span class="n">OPTIONAL</span><span class="p">,</span>
+        <span class="s1">&#39;runtime&#39;</span><span class="p">:</span> <span class="n">PriorityInfo</span><span class="o">.</span><span class="n">OPTIONAL</span><span class="p">,</span>
+        <span class="s1">&#39;learning&#39;</span><span class="p">:</span> <span class="n">PriorityInfo</span><span class="o">.</span><span class="n">OPTIONAL</span><span class="p">,</span>
+        <span class="s1">&#39;package_id&#39;</span><span class="p">:</span> <span class="n">PriorityInfo</span><span class="o">.</span><span class="n">OPTIONAL</span>
+    <span class="p">}</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">check_params</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">param_priority</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">params</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">metadata</span>
+        <span class="c1"># TODO exception name</span>
+        <span class="n">params</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;filename&#39;</span><span class="p">)</span>
+        <span class="n">params</span><span class="p">[</span><span class="s1">&#39;action&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;start&#39;</span>
+        <span class="n">algorithm_id</span> <span class="o">=</span> <span class="n">algorithm_process</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">XlearnException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">JSONWrapper</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="n">exception_info</span><span class="o">=</span><span class="n">e</span><span class="o">.</span><span class="n">MSG</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">e</span><span class="o">.</span><span class="n">STATUS</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">JSONWrapper</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="n">exception_info</span><span class="o">=</span><span class="n">UNDEFINE</span><span class="o">.</span><span class="n">MSG</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">JSONWrapper</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">algorithm_id</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="publish">
+<h2>Publish<a class="headerlink" href="#publish" title="永久链接至标题">¶</a></h2>
+<p>Install $project by running:</p>
+<blockquote>
+<div><p>install project</p>
+</div></blockquote>
+</div>
+<div class="section" id="train">
+<h2>Train<a class="headerlink" href="#train" title="永久链接至标题">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">Xlearn-Engine</a></h1>
+
+
+
+
+
+
+
+
+<h3>导航</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Application</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Logic</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#deploy">Deploy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#publish">Publish</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#train">Train</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../Metadata/index.html">Metadata</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../Components/index.html">Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Logic/index.html">Logic</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Management/index.html">Management</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Application</a><ul>
+      <li>Previous: <a href="../index.html" title="上一章">Application</a></li>
+      <li>Next: <a href="../Metadata/index.html" title="下一章">Metadata</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Kou Zhi.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../_sources/Application/Logic/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
